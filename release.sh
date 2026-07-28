@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_DIR="plugin"
 DEVELOP_BRANCH="develop"
-RELEASE_BRANCH="master"
+RELEASE_BRANCH="main"
 
 cd "$ROOT_DIR"
 
@@ -21,6 +21,11 @@ fi
 
 if ! git remote get-url origin >/dev/null 2>&1; then
     echo "Release requires an origin remote." >&2
+    exit 1
+fi
+
+if ! git show-ref --verify --quiet "refs/heads/$RELEASE_BRANCH"; then
+    echo "Release branch does not exist locally: $RELEASE_BRANCH" >&2
     exit 1
 fi
 
