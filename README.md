@@ -46,7 +46,7 @@ Create an installable plugin package with:
 
 The archive is written to `dist/yooinstantsearch.zip`.
 
-Release from `develop` with `./release.sh`. It increments the canonical `VERSION`, synchronizes the Joomla and npm metadata, builds the package, merges into `main`, tags the release, and pushes `develop`, `main`, and the tag.
+Release from `develop` with `./release.sh`. It uses the npm package version, synchronizes `VERSION` and the Joomla manifest, builds the package, merges into `main`, tags the release, and pushes `develop`, `main`, and the tag.
 
 ## Project layout
 
