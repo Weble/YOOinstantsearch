@@ -1,0 +1,113 @@
+{
+  "panels": {
+    "instantsearch": {
+      "title": "Search",
+      "width": 400,
+      "fields": {
+        "instantsearch.provider": {
+          "label": "Provider",
+          "type": "select",
+          "default": "typesense",
+          "options": {
+            "Typesense": "typesense",
+            "Algolia": "algolia"
+          }
+        },
+        "instantsearch.item_per_page": {
+          "label": "Results Per Page",
+          "description": "Number of results rendered for the search area.",
+          "type": "text",
+          "default": "20"
+        },
+        "instantsearch.typesense_host": {
+          "label": "Typesense Host",
+          "show": "instantsearch.provider === 'typesense'"
+        },
+        "instantsearch.typesense_port": {
+          "label": "Typesense Port",
+          "show": "instantsearch.provider === 'typesense'"
+        },
+        "instantsearch.typesense_protocol": {
+          "label": "Typesense Protocol",
+          "type": "select",
+          "default": "https",
+          "options": {
+            "HTTPS": "https",
+            "HTTP": "http"
+          },
+          "show": "instantsearch.provider === 'typesense'"
+        },
+        "instantsearch.typesense_path": {
+          "label": "Typesense Path",
+          "description": "Optional proxy path, for example /typesense.",
+          "show": "instantsearch.provider === 'typesense'"
+        },
+        "instantsearch.typesense_collection_name": {
+          "label": "Typesense Collection",
+          "show": "instantsearch.provider === 'typesense'"
+        },
+        "instantsearch.typesense_search_api_key": {
+          "label": "Typesense Search API Key",
+          "show": "instantsearch.provider === 'typesense'"
+        },
+        "instantsearch.typesense_query_by": {
+          "label": "Typesense Query By",
+          "description": "Comma-separated searchable fields used by Typesense.",
+          "default": "title",
+          "show": "instantsearch.provider === 'typesense'"
+        },
+        "instantsearch.algolia_app_id": {
+          "label": "Algolia App ID",
+          "show": "instantsearch.provider === 'algolia'"
+        },
+        "instantsearch.algolia_index_name": {
+          "label": "Algolia Index Name",
+          "show": "instantsearch.provider === 'algolia'"
+        },
+        "instantsearch.algolia_search_api_key": {
+          "label": "Algolia Search API Key",
+          "show": "instantsearch.provider === 'algolia'"
+        },
+        "instantsearch.context_filter_mode": {
+          "label": "Dynamic Filter",
+          "description": "Apply a page-context filter automatically.",
+          "type": "select",
+          "options": {
+            "None": "",
+            "Current Category": "category",
+            "Current Article Title": "article-title"
+          }
+        },
+        "instantsearch.context_filter_field": {
+          "label": "Article Filter Field",
+          "description": "Field name used when filtering by the current article title.",
+          "show": "instantsearch.context_filter_mode === 'article-title'"
+        },
+        "instantsearch.locale_field": {
+          "label": "Locale Field",
+          "description": "Optional field used to constrain results to the current site language. Leave empty to disable automatic language filtering."
+        },
+        "instantsearch.state_field": {
+          "label": "State Field",
+          "description": "Field used to keep only published records.",
+          "default": "state"
+        },
+        "instantsearch.state_value": {
+          "label": "State Value",
+          "default": "1"
+        }
+      }
+    }
+  },
+  "sections": {
+    "settings": {
+      "fields": {
+        "settings": {
+          "items": {
+            "instantsearch": "Instant Search"
+          }
+        }
+      }
+    }
+  }
+}

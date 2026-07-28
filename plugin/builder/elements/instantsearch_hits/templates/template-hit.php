@@ -1,0 +1,67 @@
+<?php
+
+use Joomla\CMS\Factory;
+use function YOOtheme\trans;
+
+$el = $this->el('div', [
+    'v-cloak' => true
+]);
+
+// Grid
+$grid = $this->el('div', [
+
+    'class' => [
+        'uk-child-width-[1-{@!grid_default: auto}]{grid_default}',
+        'uk-child-width-[1-{@!grid_small: auto}]{grid_small}@s',
+        'uk-child-width-[1-{@!grid_medium: auto}]{grid_medium}@m',
+        'uk-child-width-[1-{@!grid_large: auto}]{grid_large}@l',
+        'uk-child-width-[1-{@!grid_xlarge: auto}]{grid_xlarge}@xl',
+        'uk-flex-center {@grid_column_align}',
+        'uk-flex-middle {@grid_row_align}',
+        $props['grid_column_gap'] == $props['grid_row_gap'] ? 'uk-grid-{grid_column_gap}' : '[uk-grid-column-{grid_column_gap}] [uk-grid-row-{grid_row_gap}]',
+        'uk-grid-divider {@grid_divider} {@!grid_column_gap:collapse} {@!grid_row_gap:collapse}',
+        'uk-grid-match {@!grid_masonry}',
+    ],
+
+    'uk-grid' => $this->expr([
+        'masonry: {grid_masonry};',
+        'parallax: {grid_parallax};',
+    ], $props) ?: true,
+]);
+
+?>
+
+<?= $el($props, $attrs); ?>
+<ais-hits>
+    <template v-slot:default="{ items }">
+        <?= $grid($props) ?>
+        <div v-for="item in items">
+
+            <a :href="item.url" class="uk-card uk-card-small uk-card-default uk-card-hover uk-flex-1 uk-flex uk-flex-column">
+
+                <div class="uk-card-media-top uk-padding uk-text-center uk-flex uk-flex-middle uk-flex-center uk-position-relative" v-if="item.images && (item.images.image_intro || item.images.image_fulltext)">
+
+                    <img :src="item.images.image_intro || item.images.image_fulltext" />
+
+                </div>
+                <div class="uk-card-body uk-background-hover-muted uk-flex-1">
+
+                    <div class="uk-padding-small">
+                        <div class="uk-text-muted" v-if="item.category">
+                            {{ item.category }}
+                        </div>
+                        <h4>{{ item.title }}</h4>
+                        <div v-html="item.introtext" v-if="item.introtext"></div>
+                    </div>
+                </div>
+                <div class="uk-background-muted text-center uk-text-small uk-padding-small uk-text-primary">
+                    <strong>
+                        <?= trans($props['link_text']); ?>
+                    </strong>
+                </div>
+            </a>
+            </div>
+        <?= $grid->end(); ?>
+    </template>
+</ais-hits>
+<?= $el->end(); ?>

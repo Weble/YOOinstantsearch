@@ -1,0 +1,17 @@
+{
+  "name": "weble/yooinstantsearch",
+  "description": "YOOtheme Pro InstantSearch elements with Algolia and Typesense search providers",
+  "type": "joomla-plugin",
+  "version": "1.0.0",
+  "autoload": {
+    "psr-4": {
+      "Weble\\Plugin\\System\\YOOinstantsearch\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Davide Rosina",
+      "email": "davide@weble.it"
+    }
+  ]
+}

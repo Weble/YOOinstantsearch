@@ -1,0 +1,34 @@
+<?php
+return [
+    'name' => 'instantsearch_sort_item',
+    'title' => 'Item',
+    'width' => 500,
+    'fields' => [
+        'item_value' => [
+            'label' => 'Value',
+            'source' => true,
+        ],
+        'item_label' => [
+            'label' => 'Title',
+            'source' => true,
+        ],
+        'status' => '${builder.statusItem}',
+        'source' => '${builder.source}',
+    ],
+    'fieldset' => [
+        'default' => [
+            'type' => 'tabs',
+            'fields' => [
+                [
+                    'title' => 'Settings',
+                    'fields' => ['item_value', 'item_label'],
+                ],
+                '${builder.advancedItem}',
+            ],
+        ],
+    ],
+    'transforms' => [
+        'render' => function ($node) {
+        },
+    ],
+];

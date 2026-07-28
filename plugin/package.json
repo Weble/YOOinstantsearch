@@ -1,0 +1,24 @@
+{
+  "name": "yooalgolia",
+  "version": "2.0.1",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "laravel-mix": "^6.0.28",
+    "prettier": "3.8.1"
+  },
+  "scripts": {
+    "watch": "mix watch",
+    "build": "mix --production"
+  },
+  "author": "Weble",
+  "license": "MIT",
+  "dependencies": {
+    "@vueform/slider": "^2.1.10",
+    "algoliasearch": "^5.36.0",
+    "instantsearch.js": "^4.79.2",
+    "typesense-instantsearch-adapter": "^2.9.0",
+    "vue": "^3.5.0",
+    "vue-instantsearch": "^4.0.0"
+  }
+}
