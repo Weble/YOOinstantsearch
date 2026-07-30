@@ -24,23 +24,25 @@ $button = $this->el('a', [
 <ais-current-refinements :excluded-attributes=<?php echo $node->excluded_facets; ?>>
     <template v-slot:default="{ items, createURL }">
         <span v-for="item in items" :key="item.attribute">
-                <span
-                    v-for="refinement in item.refinements"
-                    :key="[
+                <template
+                        v-for="refinement in item.refinements.filter(Boolean)"
+                        :key="[
                         refinement.attribute,
                         refinement.type,
                         refinement.value,
                         refinement.operator
                     ].join(':')"
-                    v-if="refinement.value"
-                    class="uk-margin-small-right">
+                >
+                    <span
+                            v-if="refinement.value"
+                            class="uk-margin-small-right">
 
                     <?= $button($props) ?>
-                    <?php if ($props['close_icon']) : ?>
+                        <?php if ($props['close_icon']) : ?>
 
-                        <?php if ($props['icon_align'] == 'left') : ?>
-                            <span uk-icon="icon: <?= $props['close_icon'] ?>; ratio: 0.7"></span>
-                        <?php endif ?>
+                            <?php if ($props['icon_align'] == 'left') : ?>
+                                <span uk-icon="icon: <?= $props['close_icon'] ?>; ratio: 0.7"></span>
+                            <?php endif ?>
 
 
 
@@ -49,15 +51,16 @@ $button = $this->el('a', [
                         </span>
 
                         <?php if ($props['icon_align'] == 'right') : ?>
-                            <span uk-icon="icon: <?= $props['close_icon'] ?>; ratio: 0.7"></span>
+                                <span uk-icon="icon: <?= $props['close_icon'] ?>; ratio: 0.7"></span>
+                            <?php endif ?>
+
+                        <?php else : ?>
+                            {{ refinement.label }}
                         <?php endif ?>
 
-                    <?php else : ?>
-                        {{ refinement.label }}
-                    <?php endif ?>
-
-                    <?= $button->end(); ?>
+                        <?= $button->end(); ?>
                 </span>
+                </template>
         </span>
     </template>
 </ais-current-refinements>
