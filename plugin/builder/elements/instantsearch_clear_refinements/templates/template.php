@@ -1,4 +1,6 @@
 <?php
+$buttonText = ($props['button_text'] ?? 'Clear refinements') ?: 'Clear refinements';
+
 $el = $this->el('div', [
     'class' => 'el-element'
 ]);
@@ -12,11 +14,12 @@ $button = $this->el('a', [
         'uk-button uk-button-{!button_style: |link-\w+} [uk-button-{button_size}]' => ['button_style' => $props['button_style']],
     ], $props),
 
-    ':href' => 'createURL()',
-    '@click.prevent' => 'refine',
-    'v-if' => 'canRefine',
+        ':href' => 'createURL()',
+        '@click.prevent' => 'canRefine && refine()',
+        ':class' => "{ 'uk-disabled': !canRefine }",
+        ':aria-disabled' => '!canRefine',
 
-    'title' => ['{button_text}'],
+        'title' => [$buttonText],
 
 ]);
 
@@ -24,36 +27,34 @@ $button = $this->el('a', [
 ?>
 
 <?= $el($props, $attrs); ?>
-    <ais-clear-refinements
-            :excluded-attributes=<?php echo $node->excluded_facets; ?>>
-        <template v-slot:default="{ canRefine, refine, createURL }">
+<ais-clear-refinements
+        :excluded-attributes=<?php echo $node->excluded_facets; ?>>
+    <template v-slot="{ canRefine, refine, createURL }">
 
-        <?php if ($props['button_text']) : ?>
-            <?= $button($props) ?>
+        <?= $button($props) ?>
 
-            <?php if ($props['icon']) : ?>
+        <?php if ($props['icon']) : ?>
 
-                <?php if ($props['icon_align'] == 'left') : ?>
-                    <span uk-icon="<?= $props['icon'] ?>"></span>
-                <?php endif ?>
-
-                <span class="uk-text-middle">
-                      <?php echo $props['button_text'] ?>
-                </span>
-
-                <?php if ($props['icon_align'] == 'right') : ?>
-                    <span uk-icon="<?= $props['icon'] ?>"></span>
-                <?php endif ?>
-
-            <?php else : ?>
-                <span class="uk-text-middle">
-                      <?php echo $props['button_text'] ?>
-                </span>
+            <?php if ($props['icon_align'] == 'left') : ?>
+                <span uk-icon="<?= $props['icon'] ?>"></span>
             <?php endif ?>
 
-            <?= $button->end(); ?>
+            <span class="uk-text-middle">
+                      <?php echo $props['button_text'] ?>
+                </span>
 
-        <?php endif; ?>
-        </template>
-    </ais-clear-refinements>
+            <?php if ($props['icon_align'] == 'right') : ?>
+                <span uk-icon="<?= $props['icon'] ?>"></span>
+            <?php endif ?>
+
+        <?php else : ?>
+            <span class="uk-text-middle">
+                      <?php echo $buttonText ?>
+                </span>
+        <?php endif ?>
+
+        <?= $button->end(); ?>
+
+    </template>
+</ais-clear-refinements>
 <?= $el->end(); ?>
