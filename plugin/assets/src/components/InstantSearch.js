@@ -3,6 +3,7 @@ import "@vueform/slider/themes/default.css";
 import { history as historyRouter } from "instantsearch.js/es/lib/routers";
 
 import {
+  AisAutocomplete,
   AisConfigure,
   AisCurrentRefinements,
   AisHits,
@@ -63,6 +64,7 @@ export default {
   },
 
   components: {
+    AisAutocomplete,
     AisInstantSearch,
     AisHits,
     AisConfigure,
@@ -83,7 +85,9 @@ export default {
   data() {
     const config = this.config || {};
     const provider = createProvider(config);
-    const staticConfigureFilters = normalizeFilters(config.configureFilters || []);
+    const staticConfigureFilters = normalizeFilters(
+      config.configureFilters || [],
+    );
 
     return {
       provider,
@@ -92,6 +96,7 @@ export default {
         router: historyRouter(),
       },
       staticConfigureFilters,
+      autocompleteScopes: {},
       searchableFacetScopes: {},
       facetSortCache: {},
       rootConfigureState: provider.buildConfigureProps({
@@ -112,9 +117,135 @@ export default {
     // Root area bootstrap. PHP templates write filter metadata into data attributes,
     // and the root component reads them once after mount.
     this.readBuilderState();
+    document.addEventListener(
+      "pointerdown",
+      this.handleAutocompleteDocumentPointerDown,
+    );
+  },
+
+  beforeUnmount() {
+    document.removeEventListener(
+      "pointerdown",
+      this.handleAutocompleteDocumentPointerDown,
+    );
   },
 
   methods: {
+    // instantsearch_autocomplete: local UI state for one dropdown instance.
+    autocomplete(id) {
+      if (!this.autocompleteScopes[id]) {
+        this.autocompleteScopes[id] = {
+          open: false,
+          activeIndex: -1,
+        };
+      }
+
+      return this.autocompleteScopes[id];
+    },
+
+    // instantsearch_autocomplete: return only the configured number of hits
+    // from the main index exposed by AisAutocomplete.
+    autocompleteItems(indices, limit) {
+      return indices[0].hits.slice(0, limit);
+    },
+
+    // instantsearch_autocomplete: expose an accurate expanded state to both
+    // the dropdown and the combobox ARIA attributes.
+    isAutocompleteOpen(id, query, indices, limit) {
+      return Boolean(
+        this.autocomplete(id).open &&
+        query &&
+        this.autocompleteItems(indices, limit).length,
+      );
+    },
+
+    openAutocomplete(id, query) {
+      const scope = this.autocomplete(id);
+      scope.open = Boolean(query);
+      scope.activeIndex = -1;
+    },
+
+    closeAutocomplete(id) {
+      const scope = this.autocomplete(id);
+      scope.open = false;
+      scope.activeIndex = -1;
+    },
+
+    refineAutocomplete(id, event, refine) {
+      const query = event.currentTarget.value;
+      const scope = this.autocomplete(id);
+
+      refine(query);
+      scope.open = Boolean(query);
+      scope.activeIndex = -1;
+    },
+
+    handleAutocompleteKeydown(id, event, indices, limit) {
+      const items = this.autocompleteItems(indices, limit);
+      const scope = this.autocomplete(id);
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        this.closeAutocomplete(id);
+        return;
+      }
+
+      if (!items.length) {
+        return;
+      }
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        scope.open = true;
+        scope.activeIndex = (scope.activeIndex + 1) % items.length;
+        return;
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        scope.open = true;
+        scope.activeIndex =
+          scope.activeIndex <= 0 ? items.length - 1 : scope.activeIndex - 1;
+        return;
+      }
+
+      if (event.key !== "Enter" || !scope.open || scope.activeIndex < 0) {
+        return;
+      }
+
+      event.preventDefault();
+      const root = Array.from(
+        this.$el.querySelectorAll("[data-search-autocomplete-id]"),
+      ).find((element) => element.dataset.searchAutocompleteId === id);
+      const link = root?.querySelector(
+        `[data-search-autocomplete-option="${scope.activeIndex}"] a[href]`,
+      );
+
+      if (link) {
+        link.click();
+      }
+    },
+
+    trackAutocompleteSelection(id, item, sendEvent) {
+      if (typeof sendEvent === "function") {
+        sendEvent("click", item, "Autocomplete Result Selected");
+      }
+
+      this.closeAutocomplete(id);
+    },
+
+    handleAutocompleteDocumentPointerDown(event) {
+      Object.keys(this.autocompleteScopes).forEach((id) => {
+        const root = Array.from(
+          this.$el.querySelectorAll("[data-search-autocomplete-id]"),
+        ).find((element) => element.dataset.searchAutocompleteId === id);
+
+        if (root && !root.contains(event.target)) {
+          this.closeAutocomplete(id);
+        }
+      });
+    },
+
     // instantsearch_facet: keep sort arrays stable so the widget is not recreated on render.
     getFacetSortBy(primary, fallback = null) {
       const values = [primary, fallback].filter(Boolean);
@@ -251,7 +382,9 @@ export default {
     // instantsearch_searchable_facet: read the main search box query so facet suggestions
     // stay aligned with the current result set.
     getCurrentQuery() {
-      const input = this.$el.querySelector(".ais-SearchBox-input");
+      const input = this.$el.querySelector(
+        ".ais-SearchBox-input, [data-search-autocomplete-input]",
+      );
       return input ? input.value || "" : "";
     },
 
